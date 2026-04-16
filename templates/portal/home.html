@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Minha Área — BarberOS{% endblock %}
+{% block content %}
+<div class="mb-8">
+  <h2 class="font-display text-3xl font-bold text-white">Olá, {{ request.user.first_name|default:request.user.username }}! 👋</h2>
+  <p class="text-gray-500 text-sm mt-1">Bem-vindo à sua área</p>
+</div>
+
+<div class="grid grid-cols-3 gap-4 mb-8">
+  <a href="{% url 'cliente_agendar' %}" class="card p-5 flex items-center gap-4 hover:border-yellow-800 transition-colors">
+    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" style="background:rgba(201,168,76,0.1)">➕</div>
+    <div>
+      <p class="font-semibold text-white text-sm">Fazer Agendamento</p>
+      <p class="text-xs text-gray-500">Agende seu horário</p>
+    </div>
+  </a>
+  <a href="{% url 'cliente_horarios' %}" class="card p-5 flex items-center gap-4 hover:border-yellow-800 transition-colors">
+    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" style="background:rgba(201,168,76,0.1)">🕐</div>
+    <div>
+      <p class="font-semibold text-white text-sm">Horários Disponíveis</p>
+      <p class="text-xs text-gray-500">Veja a agenda</p>
+    </div>
+  </a>
+  <a href="{% url 'cliente_historico' %}" class="card p-5 flex items-center gap-4 hover:border-yellow-800 transition-colors">
+    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" style="background:rgba(201,168,76,0.1)">📋</div>
+    <div>
+      <p class="font-semibold text-white text-sm">Meu Histórico</p>
+      <p class="text-xs text-gray-500">Agendamentos passados</p>
+    </div>
+  </a>
+</div>
+
+<div class="card">
+  <div class="flex items-center justify-between p-5 border-b border-gray-800">
+    <h3 class="font-semibold text-white">Últimos Agendamentos</h3>
+    <a href="{% url 'cliente_historico' %}" class="text-xs" style="color:#C9A84C">Ver todos →</a>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Serviço</th>
+        <th>Barbeiro</th>
+        <th>Data</th>
+        <th>Horário</th>
+        <th>Preço</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ag in agendamentos %}
+      <tr>
+        <td class="text-white font-medium">{{ ag.servico.nome }}</td>
+        <td class="text-gray-400">{{ ag.barbeiro.nome }}</td>
+        <td class="text-gray-400">{{ ag.data|date:"d/m/Y" }}</td>
+        <td class="text-gray-400">{{ ag.horario|time:"H:i" }}</td>
+        <td style="color:#C9A84C">R$ {{ ag.preco }}</td>
+        <td><span class="badge-{{ ag.status }}">{{ ag.get_status_display }}</span></td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" class="text-center text-gray-600 py-10">
+          Você ainda não tem agendamentos.
+          <a href="{% url 'cliente_agendar' %}" style="color:#C9A84C">Agendar agora →</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

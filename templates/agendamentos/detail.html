@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Agendamento #{{ agendamento.pk }} — BarberOS{% endblock %}
+{% block content %}
+<div class="mb-6 flex items-center gap-4">
+  <a href="{% url 'agendamento_list' %}" class="text-gray-500 hover:text-gray-300 text-sm">← Voltar</a>
+  <h2 class="font-display text-2xl font-bold text-white">Agendamento #{{ agendamento.pk }}</h2>
+  <span class="badge-{{ agendamento.status }}">{{ agendamento.get_status_display }}</span>
+</div>
+<div class="grid grid-cols-2 gap-6">
+  <div class="card p-6 space-y-4">
+    <h3 class="font-semibold text-white border-b border-gray-800 pb-2">Detalhes</h3>
+    <div class="grid grid-cols-2 gap-4 text-sm">
+      <div><p class="text-gray-500 text-xs mb-1">Cliente</p><p class="text-white">{{ agendamento.cliente.get_full_name|default:agendamento.cliente.username }}</p></div>
+      <div><p class="text-gray-500 text-xs mb-1">Barbeiro</p><p class="text-white">{{ agendamento.barbeiro.nome }}</p></div>
+      <div><p class="text-gray-500 text-xs mb-1">Serviço</p><p class="text-white">{{ agendamento.servico.nome }}</p></div>
+      <div><p class="text-gray-500 text-xs mb-1">Preço</p><p style="color:#C9A84C" class="font-semibold">R$ {{ agendamento.preco }}</p></div>
+      <div><p class="text-gray-500 text-xs mb-1">Data</p><p class="text-white">{{ agendamento.data|date:"d/m/Y" }}</p></div>
+      <div><p class="text-gray-500 text-xs mb-1">Horário</p><p class="text-white">{{ agendamento.horario|time:"H:i" }}</p></div>
+    </div>
+    {% if agendamento.observacao %}
+    <div><p class="text-gray-500 text-xs mb-1">Observação</p><p class="text-gray-300 text-sm">{{ agendamento.observacao }}</p></div>
+    {% endif %}
+  </div>
+  <div class="card p-6">
+    <h3 class="font-semibold text-white border-b border-gray-800 pb-2 mb-4">Ações</h3>
+    <div class="space-y-3">
+      <a href="{% url 'agendamento_edit' agendamento.pk %}" class="btn-secondary block text-center text-sm">Editar Agendamento</a>
+      {% if agendamento.status == 'confirmado' %}
+      <a href="{% url 'finalizar_atendimento' agendamento.pk %}" class="btn-primary block text-center text-sm">Finalizar Atendimento</a>
+      {% elif agendamento.status == 'pendente' %}
+      <a href="{% url 'iniciar_atendimento' agendamento.pk %}" class="btn-primary block text-center text-sm">Confirmar Atendimento</a>
+      {% endif %}
+      {% if agendamento.status == 'concluido' and not agendamento.pagamento %}
+      <a href="{% url 'registrar_pagamento' agendamento.pk %}" class="btn-primary block text-center text-sm">Registrar Pagamento</a>
+      {% endif %}
+      {% if agendamento.status != 'cancelado' and agendamento.status != 'concluido' %}
+      <a href="{% url 'agendamento_cancelar' agendamento.pk %}" class="btn-danger block text-center text-sm">Cancelar Agendamento</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

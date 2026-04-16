@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Cancelar Agendamento — BarberOS{% endblock %}
+{% block content %}
+<div class="mb-6">
+  <a href="{% url 'cliente_historico' %}" class="text-gray-500 hover:text-gray-300 text-sm">← Voltar</a>
+</div>
+
+<div class="card max-w-md p-8 text-center">
+  <div class="text-5xl mb-4">⚠️</div>
+  <h2 class="text-xl font-bold text-white mb-2">Cancelar agendamento?</h2>
+  <p class="text-gray-400 text-sm mb-6">Você tem certeza que deseja cancelar este agendamento?</p>
+
+  <!-- Detalhes do agendamento -->
+  <div class="rounded-lg p-4 mb-6 text-left space-y-2" style="background:rgba(255,255,255,0.04);border:1px solid #2a2a2a">
+    <div class="flex justify-between text-sm">
+      <span class="text-gray-500">Serviço</span>
+      <span class="text-white font-medium">{{ agendamento.servico.nome }}</span>
+    </div>
+    <div class="flex justify-between text-sm">
+      <span class="text-gray-500">Barbeiro</span>
+      <span class="text-white">{{ agendamento.barbeiro.nome }}</span>
+    </div>
+    <div class="flex justify-between text-sm">
+      <span class="text-gray-500">Data</span>
+      <span class="text-white">{{ agendamento.data|date:"d/m/Y" }}</span>
+    </div>
+    <div class="flex justify-between text-sm">
+      <span class="text-gray-500">Horário</span>
+      <span class="text-white">{{ agendamento.horario|time:"H:i" }}</span>
+    </div>
+    <div class="flex justify-between text-sm">
+      <span class="text-gray-500">Valor</span>
+      <span style="color:#C9A84C" class="font-semibold">R$ {{ agendamento.preco }}</span>
+    </div>
+  </div>
+
+  <form method="post" class="flex gap-3 justify-center">
+    {% csrf_token %}
+    <button type="submit" class="btn-danger px-6 py-2.5">Sim, cancelar</button>
+    <a href="{% url 'cliente_historico' %}" class="btn-secondary px-6 py-2.5">Não, voltar</a>
+  </form>
+</div>
+{% endblock %}

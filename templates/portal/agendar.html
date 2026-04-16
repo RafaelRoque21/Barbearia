@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}Fazer Agendamento — BarberOS{% endblock %}
+{% block content %}
+<div class="mb-6 flex items-center gap-4">
+  <a href="{% url 'cliente_portal' %}" class="text-gray-500 hover:text-gray-300 text-sm">← Voltar</a>
+  <h2 class="font-display text-2xl font-bold text-white">Fazer Agendamento</h2>
+</div>
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="mb-4 {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+<div class="card max-w-xl p-6">
+  <form method="post" class="space-y-5">
+    {% csrf_token %}
+
+    <div>
+      <label class="block text-sm text-gray-400 mb-1.5">Serviço</label>
+      <select name="servico" class="form-select" id="id_servico">
+        <option value="">Selecione um serviço...</option>
+        {% for s in servicos %}
+        <option value="{{ s.pk }}" data-preco="{{ s.preco }}" data-duracao="{{ s.duracao }}">
+          {{ s.nome }} — R$ {{ s.preco }} ({{ s.duracao }} min)
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-sm text-gray-400 mb-1.5">Barbeiro</label>
+      <select name="barbeiro" class="form-select">
+        <option value="">Selecione um barbeiro...</option>
+        {% for b in barbeiros %}
+        <option value="{{ b.pk }}">{{ b.nome }} — {{ b.get_especialidade_display }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm text-gray-400 mb-1.5">Data</label>
+        <input type="date" name="data" class="form-input" min="{{ hoje }}">
+      </div>
+      <div>
+        <label class="block text-sm text-gray-400 mb-1.5">Horário</label>
+        <input type="time" name="horario" class="form-input" step="1800">
+      </div>
+    </div>
+
+    <div id="resumo" class="hidden rounded-lg p-4" style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2)">
+      <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Resumo</p>
+      <p class="text-white font-semibold" id="resumo_nome">—</p>
+      <p class="text-sm text-gray-400" id="resumo_info">—</p>
+    </div>
+
+    <button type="submit" class="btn-primary w-full py-3">Confirmar Agendamento</button>
+  </form>
+</div>
+
+<script>
+  const sel = document.getElementById('id_servico');
+  const resumo = document.getElementById('resumo');
+  const resumoNome = document.getElementById('resumo_nome');
+  const resumoInfo = document.getElementById('resumo_info');
+  sel.addEventListener('change', function() {
+    const opt = this.options[this.selectedIndex];
+    if (opt.value) {
+      resumo.classList.remove('hidden');
+      resumoNome.textContent = opt.text.split(' —')[0];
+      resumoInfo.textContent = 'R$ ' + opt.dataset.preco + ' · ' + opt.dataset.duracao + ' minutos';
+    } else {
+      resumo.classList.add('hidden');
+    }
+  });
+</script>
+{% endblock %}

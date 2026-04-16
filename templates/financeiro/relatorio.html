@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Relatório — BarberOS{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h2 class="font-display text-3xl font-bold text-white">Relatório</h2>
+    <p class="text-gray-500 text-sm mt-1">Histórico de agendamentos</p>
+  </div>
+  <div class="card-gold px-5 py-3 rounded-xl text-center">
+    <p class="text-xs font-semibold" style="color:#0D0D0D;opacity:0.6">Faturamento Total</p>
+    <p class="text-2xl font-bold" style="color:#0D0D0D">R$ {{ total_faturamento }}</p>
+  </div>
+</div>
+<div class="card">
+  <table>
+    <thead><tr><th>Data</th><th>Cliente</th><th>Serviço</th><th>Barbeiro</th><th>Preço</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for ag in agendamentos %}
+      <tr>
+        <td class="text-gray-400">{{ ag.data|date:"d/m/Y" }}</td>
+        <td class="text-white">{{ ag.cliente.get_full_name|default:ag.cliente.username }}</td>
+        <td class="text-gray-400">{{ ag.servico.nome }}</td>
+        <td class="text-gray-400">{{ ag.barbeiro.nome }}</td>
+        <td style="color:#C9A84C">R$ {{ ag.preco }}</td>
+        <td><span class="badge-{{ ag.status }}">{{ ag.get_status_display }}</span></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-gray-600 text-center py-10">Nenhum dado</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

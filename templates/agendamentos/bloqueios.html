@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Horários Bloqueados — BarberOS{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h2 class="font-display text-3xl font-bold text-white">Horários Bloqueados</h2>
+    <p class="text-gray-500 text-sm mt-1">Feriados, férias e intervalos bloqueados</p>
+  </div>
+  <a href="{% url 'horario_bloqueado_create' %}" class="btn-primary">+ Novo Bloqueio</a>
+</div>
+
+<div class="card">
+  <table>
+    <thead>
+      <tr>
+        <th>Barbeiro</th>
+        <th>Tipo</th>
+        <th>Data</th>
+        <th>Horário</th>
+        <th>Motivo</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for b in bloqueios %}
+      <tr>
+        <td class="text-white font-medium">
+          {{ b.barbeiro.nome|default:"Todos os barbeiros" }}
+        </td>
+        <td>
+          {% if b.tipo == 'dia' %}
+            <span class="badge-cancelado">Dia Inteiro</span>
+          {% else %}
+            <span class="badge-pendente">Horário</span>
+          {% endif %}
+        </td>
+        <td class="text-gray-400">{{ b.data|date:"d/m/Y" }}</td>
+        <td class="text-gray-400">
+          {% if b.tipo == 'horario' %}
+            {{ b.horario_inicio|time:"H:i" }} — {{ b.horario_fim|time:"H:i" }}
+          {% else %}
+            <span class="text-gray-600">—</span>
+          {% endif %}
+        </td>
+        <td class="text-gray-400">{{ b.motivo|default:"—" }}</td>
+        <td>
+          <a href="{% url 'horario_bloqueado_delete' b.pk %}" class="btn-danger text-xs py-1 px-3">Remover</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" class="text-center text-gray-600 py-10">
+          Nenhum bloqueio cadastrado.
+          <a href="{% url 'horario_bloqueado_create' %}" style="color:#C9A84C">Criar agora →</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

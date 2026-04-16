@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Barbeiros — BarberOS{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h2 class="font-display text-3xl font-bold text-white">Barbeiros</h2>
+    <p class="text-gray-500 text-sm mt-1">{{ barbeiros.count }} barbeiro(s) cadastrado(s)</p>
+  </div>
+  <a href="{% url 'barbeiro_create' %}" class="btn-primary">+ Novo Barbeiro</a>
+</div>
+<div class="card">
+  <table>
+    <thead><tr><th>Nome</th><th>Telefone</th><th>Especialidade</th><th>Horário</th><th>Status</th><th>Ações</th></tr></thead>
+    <tbody>
+      {% for b in barbeiros %}
+      <tr>
+        <td class="font-medium text-white">{{ b.nome }}</td>
+        <td class="text-gray-400">{{ b.telefone }}</td>
+        <td class="text-gray-400">{{ b.get_especialidade_display }}</td>
+        <td class="text-gray-400">{{ b.horario_inicio|time:"H:i" }} — {{ b.horario_fim|time:"H:i" }}</td>
+        <td><span class="badge-{{ b.status }}">{{ b.get_status_display }}</span></td>
+        <td class="flex gap-2">
+          <a href="{% url 'barbeiro_edit' b.pk %}" class="btn-secondary text-xs py-1 px-3">Editar</a>
+          <a href="{% url 'barbeiro_delete' b.pk %}" class="btn-danger text-xs py-1 px-3">Excluir</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-gray-600 text-center py-10">Nenhum barbeiro cadastrado. <a href="{% url 'barbeiro_create' %}" style="color:#C9A84C">Cadastrar agora →</a></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

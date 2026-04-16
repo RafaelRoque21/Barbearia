@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}BarberOS{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'DM Sans', sans-serif; }
+    .font-display { font-family: 'Playfair Display', serif; }
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #E8C97A;
+      --dark: #0D0D0D;
+      --dark-2: #1A1A1A;
+      --dark-3: #252525;
+    }
+    body { background-color: var(--dark); color: #E8E8E8; }
+    .sidebar { background: var(--dark-2); border-right: 1px solid #2a2a2a; }
+    .nav-link { transition: all 0.2s; }
+    .nav-link:hover, .nav-link.active { background: rgba(201,168,76,0.12); color: var(--gold); border-left: 3px solid var(--gold); }
+    .nav-link { border-left: 3px solid transparent; }
+    .card { background: var(--dark-2); border: 1px solid #2a2a2a; border-radius: 12px; }
+    .card-gold { background: linear-gradient(135deg, #C9A84C 0%, #8B6914 100%); }
+    .btn-primary { background: linear-gradient(135deg, #C9A84C, #8B6914); color: #0D0D0D; font-weight: 600; border-radius: 8px; padding: 0.5rem 1.25rem; transition: opacity 0.2s; }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-secondary { background: #2a2a2a; color: #E8E8E8; border: 1px solid #3a3a3a; border-radius: 8px; padding: 0.5rem 1.25rem; transition: background 0.2s; }
+    .btn-secondary:hover { background: #333; }
+    .btn-danger { background: #7f1d1d; color: #fca5a5; border-radius: 8px; padding: 0.5rem 1.25rem; }
+    .btn-danger:hover { background: #991b1b; }
+    .form-input, .form-select, .form-textarea {
+      background: #1f1f1f; border: 1px solid #3a3a3a; color: #E8E8E8;
+      border-radius: 8px; padding: 0.5rem 0.75rem; width: 100%;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none; border-color: var(--gold); box-shadow: 0 0 0 2px rgba(201,168,76,0.15);
+    }
+    .form-select option { background: #1f1f1f; }
+    .badge-pendente { background: #78350f; color: #fcd34d; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; }
+    .badge-confirmado { background: #14532d; color: #86efac; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; }
+    .badge-cancelado { background: #7f1d1d; color: #fca5a5; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; }
+    .badge-concluido { background: #1e3a5f; color: #93c5fd; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; }
+    .badge-ativo { background: #14532d; color: #86efac; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; }
+    .badge-inativo { background: #374151; color: #9ca3af; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; }
+    table { width: 100%; border-collapse: collapse; }
+    th { color: #9ca3af; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #2a2a2a; }
+    td { padding: 0.85rem 1rem; border-bottom: 1px solid #1f1f1f; font-size: 0.875rem; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .alert-success { background: #14532d33; border: 1px solid #166534; color: #86efac; border-radius: 8px; padding: 0.75rem 1rem; }
+    .alert-warning { background: #78350f33; border: 1px solid #92400e; color: #fcd34d; border-radius: 8px; padding: 0.75rem 1rem; }
+    .alert-error { background: #7f1d1d33; border: 1px solid #991b1b; color: #fca5a5; border-radius: 8px; padding: 0.75rem 1rem; }
+    .scissor-icon::before { content: '✂'; }
+
+    /* Scrollbar customizada da sidebar */
+    .sidebar-nav {
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #C9A84C #1A1A1A;
+    }
+    .sidebar-nav::-webkit-scrollbar {
+      width: 5px;
+    }
+    .sidebar-nav::-webkit-scrollbar-track {
+      background: #1A1A1A;
+    }
+    .sidebar-nav::-webkit-scrollbar-thumb {
+      background: #C9A84C;
+      border-radius: 999px;
+    }
+    .sidebar-nav::-webkit-scrollbar-thumb:hover {
+      background: #E8C97A;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex">
+
+  <!-- Sidebar -->
+  <aside class="sidebar w-64 min-h-screen flex flex-col fixed left-0 top-0 z-30">
+    <div class="p-6 border-b border-gray-800">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style="background:linear-gradient(135deg,#C9A84C,#8B6914)">✂</div>
+        <div>
+          <h1 class="font-display font-bold text-lg leading-tight" style="color:#C9A84C">BarberOS</h1>
+          <p class="text-xs text-gray-500">Sistema de Gestão</p>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav p-4 space-y-1" style="flex:1; max-height: calc(100vh - 160px);">
+
+      {% if request.user.tipo == 'cliente' %}
+
+        <p class="text-xs text-gray-600 uppercase tracking-widest px-3 pt-2 pb-1">Minha Área</p>
+        <a href="{% url 'cliente_portal' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <span>🏠</span> Início
+        </a>
+        <a href="{% url 'cliente_perfil' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <span>👤</span> Meu Perfil
+        </a>
+        <a href="{% url 'cliente_agendar' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <span>➕</span> Fazer Agendamento
+        </a>
+        <a href="{% url 'cliente_horarios' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <span>🕐</span> Horários Disponíveis
+        </a>
+        <a href="{% url 'cliente_historico' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <span>📋</span> Meu Histórico
+        </a>
+
+      {% else %}
+
+        <p class="text-xs text-gray-600 uppercase tracking-widest px-3 pt-2 pb-1">Geral</p>
+        <a href="{% url 'dashboard' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+          <span>🏠</span> Dashboard
+        </a>
+        <a href="{% url 'agenda' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <span>📅</span> Agenda
+        </a>
+        <a href="{% url 'atendimento_list' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <span>⚡</span> Atendimento
+        </a>
+
+        <p class="text-xs text-gray-600 uppercase tracking-widest px-3 pt-4 pb-1">Cadastros</p>
+        <a href="{% url 'agendamento_list' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <span>📋</span> Agendamentos
+        </a>
+        <a href="{% url 'cliente_list' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <span>👤</span> Clientes
+        </a>
+        <a href="{% url 'barbeiro_list' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <span>💈</span> Barbeiros
+        </a>
+        <a href="{% url 'servico_list' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <span>🛠</span> Serviços
+        </a>
+
+        <p class="text-xs text-gray-600 uppercase tracking-widest px-3 pt-4 pb-1">Financeiro</p>
+        <a href="{% url 'financeiro_dashboard' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <span>💰</span> Financeiro
+        </a>
+        <a href="{% url 'relatorio' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <span>📊</span> Relatórios
+        </a>
+
+      {% endif %}
+
+        <a href="{% url 'horario_bloqueado_list' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <span>🚫</span> Bloqueios
+        </a>
+
+    </nav>
+
+    <div class="p-4 border-t border-gray-800">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background:#C9A84C;color:#0D0D0D">
+          {{ request.user.first_name|default:request.user.username|first|upper }}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm text-gray-300 truncate">{{ request.user.get_full_name|default:request.user.username }}</p>
+          <p class="text-xs text-gray-600">{{ request.user.get_tipo_display|default:"Admin" }}</p>
+        </div>
+        <form method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="text-gray-600 hover:text-gray-400 text-xs bg-transparent border-0 cursor-pointer p-0">Sair</button>
+        </form>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 ml-64 min-h-screen">
+    <div class="p-8">
+      {% if messages %}
+        <div class="mb-6 space-y-2">
+          {% for message in messages %}
+            <div class="alert-{% if message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% else %}success{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+</body>
+</html>

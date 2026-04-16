@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Finalizar Atendimento — BarberOS{% endblock %}
+{% block content %}
+<div class="mb-6">
+  <a href="{% url 'atendimento_list' %}" class="text-gray-500 hover:text-gray-300 text-sm">← Voltar</a>
+</div>
+<div class="card max-w-lg p-6">
+  <h2 class="font-display text-2xl font-bold text-white mb-1">Finalizar Atendimento</h2>
+  <p class="text-gray-400 text-sm mb-6">{{ agendamento.cliente.get_full_name|default:agendamento.cliente.username }} · {{ agendamento.servico.nome }}</p>
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+    <div>
+      <label class="block text-sm text-gray-400 mb-1.5">Observação (opcional)</label>
+      <textarea name="observacao" class="form-textarea" rows="4" placeholder="Anotações sobre o atendimento..."></textarea>
+    </div>
+    <div class="flex gap-3">
+      <button type="submit" class="btn-primary">✓ Concluir Atendimento</button>
+      <a href="{% url 'atendimento_list' %}" class="btn-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
