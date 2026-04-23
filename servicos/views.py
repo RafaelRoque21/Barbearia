@@ -4,6 +4,7 @@ from django.contrib import messages
 from .models import Servico
 from .forms import ServicoForm
 from core.views import somente_admin
+from core.views import somente_admin
 
 @somente_admin
 def servico_list(request):

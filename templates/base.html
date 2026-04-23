@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}BarberOS{% endblock %}</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
@@ -81,8 +82,10 @@
   <aside class="sidebar w-64 min-h-screen flex flex-col fixed left-0 top-0 z-30">
     <div class="p-6 border-b border-gray-800">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style="background:linear-gradient(135deg,#C9A84C,#8B6914)">✂</div>
-        <div>
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#C9A84C,#8B6914)">
+          <i data-lucide="scissors" class="w-5 h-5" style="color:#0D0D0D"></i>
+          </div>
+          <div>
           <h1 class="font-display font-bold text-lg leading-tight" style="color:#C9A84C">BarberOS</h1>
           <p class="text-xs text-gray-500">Sistema de Gestão</p>
         </div>
@@ -95,61 +98,60 @@
 
         <p class="text-xs text-gray-600 uppercase tracking-widest px-3 pt-2 pb-1">Minha Área</p>
         <a href="{% url 'cliente_portal' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
-          <span>🏠</span> Início
+          <i data-lucide="home" class="w-4 h-4" style="color:#C9A84C"></i> Início
         </a>
         <a href="{% url 'cliente_perfil' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
-          <span>👤</span> Meu Perfil
+          <i data-lucide="user-circle" class="w-4 h-4" style="color:#C9A84C"></i> Meu Perfil
         </a>
         <a href="{% url 'cliente_agendar' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
-          <span>➕</span> Fazer Agendamento
+          <i data-lucide="calendar-plus" class="w-4 h-4" style="color:#C9A84C"></i> Fazer Agendamento
         </a>
         <a href="{% url 'cliente_horarios' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
-          <span>🕐</span> Horários Disponíveis
+          <i data-lucide="clock" class="w-4 h-4" style="color:#C9A84C"></i> Horários Disponíveis
         </a>
         <a href="{% url 'cliente_historico' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
-          <span>📋</span> Meu Histórico
+          <i data-lucide="scroll-text" class="w-4 h-4" style="color:#C9A84C"></i> Meu Histórico
         </a>
 
       {% else %}
 
         <p class="text-xs text-gray-600 uppercase tracking-widest px-3 pt-2 pb-1">Geral</p>
         <a href="{% url 'dashboard' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-          <span>🏠</span> Dashboard
+          <i data-lucide="layout-dashboard" class="w-4 h-4" style="color:#C9A84C"></i> Dashboard
         </a>
         <a href="{% url 'agenda' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
-          <span>📅</span> Agenda
+          <i data-lucide="calendar-days" class="w-4 h-4" style="color:#C9A84C"></i> Agenda
         </a>
         <a href="{% url 'atendimento_list' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
-          <span>⚡</span> Atendimento
+          <i data-lucide="zap" class="w-4 h-4" style="color:#C9A84C"></i> Atendimento
         </a>
 
         <p class="text-xs text-gray-600 uppercase tracking-widest px-3 pt-4 pb-1">Cadastros</p>
         <a href="{% url 'agendamento_list' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
-          <span>📋</span> Agendamentos
+          <i data-lucide="clipboard-list" class="w-4 h-4" style="color:#C9A84C"></i> Agendamentos
         </a>
         <a href="{% url 'cliente_list' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
-          <span>👤</span> Clientes
+          <i data-lucide="users" class="w-4 h-4" style="color:#C9A84C"></i> Clientes
         </a>
         <a href="{% url 'barbeiro_list' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
-          <span>💈</span> Barbeiros
+          <i data-lucide="scissors" class="w-4 h-4" style="color:#C9A84C"></i> Barbeiros
         </a>
         <a href="{% url 'servico_list' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
-          <span>🛠</span> Serviços
+          <i data-lucide="sparkles" class="w-4 h-4" style="color:#C9A84C"></i> Serviços
+        </a>
+        <a href="{% url 'horario_bloqueado_list' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <i data-lucide="ban" class="w-4 h-4" style="color:#C9A84C"></i> Bloqueios
         </a>
 
         <p class="text-xs text-gray-600 uppercase tracking-widest px-3 pt-4 pb-1">Financeiro</p>
         <a href="{% url 'financeiro_dashboard' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
-          <span>💰</span> Financeiro
+          <i data-lucide="wallet" class="w-4 h-4" style="color:#C9A84C"></i> Financeiro
         </a>
         <a href="{% url 'relatorio' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
-          <span>📊</span> Relatórios
+          <i data-lucide="bar-chart-2" class="w-4 h-4" style="color:#C9A84C"></i> Relatórios
         </a>
 
       {% endif %}
-
-        <a href="{% url 'horario_bloqueado_list' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
-          <span>🚫</span> Bloqueios
-        </a>
 
     </nav>
 
@@ -185,6 +187,10 @@
       {% block content %}{% endblock %}
     </div>
   </main>
+
+  <script>
+    lucide.createIcons();
+  </script>
 
 </body>
 </html>

@@ -6,7 +6,9 @@
     <h2 class="font-display text-3xl font-bold text-white">Horários Bloqueados</h2>
     <p class="text-gray-500 text-sm mt-1">Feriados, férias e intervalos bloqueados</p>
   </div>
-  <a href="{% url 'horario_bloqueado_create' %}" class="btn-primary">+ Novo Bloqueio</a>
+  <a href="{% url 'horario_bloqueado_create' %}" class="btn-primary flex items-center gap-2">
+    <i data-lucide="plus" class="w-4 h-4"></i> Novo Bloqueio
+  </a>
 </div>
 
 <div class="card">
@@ -24,34 +26,72 @@
     <tbody>
       {% for b in bloqueios %}
       <tr>
-        <td class="text-white font-medium">
-          {{ b.barbeiro.nome|default:"Todos os barbeiros" }}
+        <td>
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                 style="background:rgba(220,38,38,0.1)">
+              <i data-lucide="scissors" class="w-4 h-4" style="color:#fca5a5"></i>
+            </div>
+            <span class="font-medium text-white">
+              {{ b.barbeiro.nome|default:"Todos os barbeiros" }}
+            </span>
+          </div>
         </td>
         <td>
           {% if b.tipo == 'dia' %}
-            <span class="badge-cancelado">Dia Inteiro</span>
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="calendar-x" class="w-3.5 h-3.5" style="color:#fca5a5"></i>
+              <span class="badge-cancelado">Dia Inteiro</span>
+            </div>
           {% else %}
-            <span class="badge-pendente">Horário</span>
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="clock" class="w-3.5 h-3.5" style="color:#fcd34d"></i>
+              <span class="badge-pendente">Horário</span>
+            </div>
           {% endif %}
         </td>
-        <td class="text-gray-400">{{ b.data|date:"d/m/Y" }}</td>
-        <td class="text-gray-400">
+        <td>
+          <div class="flex items-center gap-1.5 text-gray-400">
+            <i data-lucide="calendar" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+            {{ b.data|date:"d/m/Y" }}
+          </div>
+        </td>
+        <td>
           {% if b.tipo == 'horario' %}
-            {{ b.horario_inicio|time:"H:i" }} — {{ b.horario_fim|time:"H:i" }}
+            <div class="flex items-center gap-1.5 text-gray-400">
+              <i data-lucide="clock" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+              {{ b.horario_inicio|time:"H:i" }} — {{ b.horario_fim|time:"H:i" }}
+            </div>
           {% else %}
             <span class="text-gray-600">—</span>
           {% endif %}
         </td>
-        <td class="text-gray-400">{{ b.motivo|default:"—" }}</td>
         <td>
-          <a href="{% url 'horario_bloqueado_delete' b.pk %}" class="btn-danger text-xs py-1 px-3">Remover</a>
+          {% if b.motivo %}
+            <div class="flex items-center gap-1.5 text-gray-400">
+              <i data-lucide="info" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+              {{ b.motivo }}
+            </div>
+          {% else %}
+            <span class="text-gray-600">—</span>
+          {% endif %}
+        </td>
+        <td>
+          <a href="{% url 'horario_bloqueado_delete' b.pk %}" class="btn-danger text-xs py-1 px-3 flex items-center gap-1 w-fit">
+            <i data-lucide="trash-2" class="w-3 h-3"></i> Remover
+          </a>
         </td>
       </tr>
       {% empty %}
       <tr>
-        <td colspan="6" class="text-center text-gray-600 py-10">
-          Nenhum bloqueio cadastrado.
-          <a href="{% url 'horario_bloqueado_create' %}" style="color:#C9A84C">Criar agora →</a>
+        <td colspan="6" class="text-center py-12">
+          <div class="flex flex-col items-center gap-3">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:rgba(201,168,76,0.1)">
+              <i data-lucide="ban" class="w-6 h-6" style="color:#C9A84C"></i>
+            </div>
+            <p class="text-gray-500">Nenhum bloqueio cadastrado.</p>
+            <a href="{% url 'horario_bloqueado_create' %}" class="btn-primary text-xs py-1.5 px-4">Criar agora</a>
+          </div>
         </td>
       </tr>
       {% endfor %}

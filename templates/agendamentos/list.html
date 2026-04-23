@@ -6,39 +6,112 @@
     <h2 class="font-display text-3xl font-bold text-white">Agendamentos</h2>
     <p class="text-gray-500 text-sm mt-1">{{ agendamentos.count }} agendamento(s)</p>
   </div>
-  <a href="{% url 'agendamento_create' %}" class="btn-primary">+ Novo Agendamento</a>
+  <a href="{% url 'agendamento_create' %}" class="btn-primary flex items-center gap-2">
+    <i data-lucide="plus" class="w-4 h-4"></i> Novo Agendamento
+  </a>
 </div>
 
 <!-- Filter -->
 <div class="flex gap-2 mb-5">
-  <a href="{% url 'agendamento_list' %}" class="btn-secondary text-xs py-1.5 px-4 {% if not status_filter %}ring-1 ring-yellow-700{% endif %}">Todos</a>
-  {% for val, label in agendamentos.model.STATUS_CHOICES %}
-  <a href="?status={{ val }}" class="btn-secondary text-xs py-1.5 px-4 {% if status_filter == val %}ring-1 ring-yellow-700{% endif %}">{{ label }}</a>
-  {% endfor %}
+  <a href="{% url 'agendamento_list' %}" class="btn-secondary text-xs py-1.5 px-4 flex items-center gap-1.5 {% if not status_filter %}ring-1 ring-yellow-700{% endif %}">
+    <i data-lucide="list" class="w-3.5 h-3.5" style="color:#C9A84C"></i> Todos
+  </a>
+  <a href="?status=pendente" class="btn-secondary text-xs py-1.5 px-4 flex items-center gap-1.5 {% if status_filter == 'pendente' %}ring-1 ring-yellow-700{% endif %}">
+    <i data-lucide="clock" class="w-3.5 h-3.5" style="color:#fcd34d"></i> Pendente
+  </a>
+  <a href="?status=confirmado" class="btn-secondary text-xs py-1.5 px-4 flex items-center gap-1.5 {% if status_filter == 'confirmado' %}ring-1 ring-yellow-700{% endif %}">
+    <i data-lucide="check-circle" class="w-3.5 h-3.5" style="color:#86efac"></i> Confirmado
+  </a>
+  <a href="?status=concluido" class="btn-secondary text-xs py-1.5 px-4 flex items-center gap-1.5 {% if status_filter == 'concluido' %}ring-1 ring-yellow-700{% endif %}">
+    <i data-lucide="badge-check" class="w-3.5 h-3.5" style="color:#93c5fd"></i> Concluído
+  </a>
+  <a href="?status=cancelado" class="btn-secondary text-xs py-1.5 px-4 flex items-center gap-1.5 {% if status_filter == 'cancelado' %}ring-1 ring-yellow-700{% endif %}">
+    <i data-lucide="x-circle" class="w-3.5 h-3.5" style="color:#fca5a5"></i> Cancelado
+  </a>
 </div>
 
 <div class="card">
   <table>
-    <thead><tr><th>Cliente</th><th>Serviço</th><th>Barbeiro</th><th>Data</th><th>Horário</th><th>Preço</th><th>Status</th><th>Ações</th></tr></thead>
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>Serviço</th>
+        <th>Barbeiro</th>
+        <th>Data</th>
+        <th>Horário</th>
+        <th>Preço</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
     <tbody>
       {% for ag in agendamentos %}
       <tr>
-        <td class="font-medium text-white">{{ ag.cliente.get_full_name|default:ag.cliente.username }}</td>
-        <td class="text-gray-400">{{ ag.servico.nome }}</td>
-        <td class="text-gray-400">{{ ag.barbeiro.nome }}</td>
-        <td class="text-gray-400">{{ ag.data|date:"d/m/Y" }}</td>
-        <td class="text-gray-400">{{ ag.horario|time:"H:i" }}</td>
-        <td style="color:#C9A84C">R$ {{ ag.preco }}</td>
+        <td>
+          <div class="flex items-center gap-3">
+            <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                 style="background:rgba(201,168,76,0.15);color:#C9A84C">
+              {{ ag.cliente.first_name|default:ag.cliente.username|first|upper }}
+            </div>
+            <span class="font-medium text-white">{{ ag.cliente.get_full_name|default:ag.cliente.username }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="flex items-center gap-1.5 text-gray-400">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+            {{ ag.servico.nome }}
+          </div>
+        </td>
+        <td>
+          <div class="flex items-center gap-1.5 text-gray-400">
+            <i data-lucide="scissors" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+            {{ ag.barbeiro.nome }}
+          </div>
+        </td>
+        <td>
+          <div class="flex items-center gap-1.5 text-gray-400">
+            <i data-lucide="calendar" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+            {{ ag.data|date:"d/m/Y" }}
+          </div>
+        </td>
+        <td>
+          <div class="flex items-center gap-1.5 text-gray-400">
+            <i data-lucide="clock" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+            {{ ag.horario|time:"H:i" }}
+          </div>
+        </td>
+        <td>
+          <div class="flex items-center gap-1.5 font-semibold" style="color:#C9A84C">
+            <i data-lucide="tag" class="w-3.5 h-3.5" style="opacity:0.6"></i>
+            R$ {{ ag.preco }}
+          </div>
+        </td>
         <td><span class="badge-{{ ag.status }}">{{ ag.get_status_display }}</span></td>
-        <td class="flex gap-2">
-          <a href="{% url 'agendamento_detail' ag.pk %}" class="btn-secondary text-xs py-1 px-3">Ver</a>
-          {% if ag.status != 'cancelado' and ag.status != 'concluido' %}
-          <a href="{% url 'agendamento_cancelar' ag.pk %}" class="btn-danger text-xs py-1 px-3">Cancelar</a>
-          {% endif %}
+        <td>
+          <div class="flex gap-2">
+            <a href="{% url 'agendamento_detail' ag.pk %}" class="btn-secondary text-xs py-1 px-3 flex items-center gap-1">
+              <i data-lucide="eye" class="w-3 h-3"></i> Ver
+            </a>
+            {% if ag.status != 'cancelado' and ag.status != 'concluido' %}
+            <a href="{% url 'agendamento_cancelar' ag.pk %}" class="btn-danger text-xs py-1 px-3 flex items-center gap-1">
+              <i data-lucide="x" class="w-3 h-3"></i> Cancelar
+            </a>
+            {% endif %}
+          </div>
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="8" class="text-gray-600 text-center py-10">Nenhum agendamento. <a href="{% url 'agendamento_create' %}" style="color:#C9A84C">Criar →</a></td></tr>
+      <tr>
+        <td colspan="8" class="text-center py-12">
+          <div class="flex flex-col items-center gap-3">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:rgba(201,168,76,0.1)">
+              <i data-lucide="calendar-x" class="w-6 h-6" style="color:#C9A84C"></i>
+            </div>
+            <p class="text-gray-500">Nenhum agendamento encontrado.</p>
+            <a href="{% url 'agendamento_create' %}" class="btn-primary text-xs py-1.5 px-4">Criar agendamento</a>
+          </div>
+        </td>
+      </tr>
       {% endfor %}
     </tbody>
   </table>

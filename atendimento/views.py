@@ -4,6 +4,7 @@ from django.contrib import messages
 from agendamento.models import Agendamento
 import datetime
 from core.views import somente_admin
+from core.decorators import somente_admin
 
 @somente_admin
 def atendimento_list(request):

@@ -2,25 +2,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Usuario, Barbeiro
-from .forms import ClienteForm, BarbeiroForm
-from agendamento.models import Agendamento
-from servicos.models import Servico
-import datetime
 from .forms import ClienteForm, BarbeiroForm, PerfilClienteForm
-# Verificar bloqueios
-from agendamento.models import HorarioBloqueado
+from agendamento.models import Agendamento, HorarioBloqueado
+from servicos.models import Servico
 from django.db.models import Q
+from core.decorators import somente_admin
+import datetime
 import datetime as dt
-
-def somente_admin(view_func):
-    from functools import wraps
-    from django.http import HttpResponseForbidden
-    @wraps(view_func)
-    def wrapper(request, *args, **kwargs):
-        if not request.user.is_authenticated or request.user.tipo == 'cliente':
-            return HttpResponseForbidden('<h2 style="font-family:sans-serif;padding:2rem">Acesso negado. <a href="/">Voltar</a></h2>')
-        return view_func(request, *args, **kwargs)
-    return wrapper
 
 def index(request):
     if request.user.is_authenticated:
@@ -53,9 +41,12 @@ def cliente_historico(request):
 def cliente_agendar(request):
     if request.user.tipo != 'cliente':
         return redirect('dashboard')
+
     from servicos.models import Servico
     from .models import Barbeiro
-    from agendamento.models import Agendamento
+    from agendamento.models import Agendamento, HorarioBloqueado
+    from django.db.models import Q
+    import datetime as dt
 
     servicos = Servico.objects.filter(status='ativo')
     barbeiros = Barbeiro.objects.filter(status='ativo')
@@ -67,6 +58,7 @@ def cliente_agendar(request):
         horario = request.POST.get('horario')
 
         erros = []
+
         if not all([servico_id, barbeiro_id, data, horario]):
             erros.append('Preencha todos os campos.')
         else:
@@ -80,50 +72,54 @@ def cliente_agendar(request):
         if not erros:
             servico = get_object_or_404(Servico, pk=servico_id)
             barbeiro = get_object_or_404(Barbeiro, pk=barbeiro_id)
+
+            # Verificar conflito de horário
             conflito = Agendamento.objects.filter(
-    barbeiro=barbeiro, data=data, horario=horario,
-    status__in=['pendente', 'confirmado']
-).exists()
-            
-    if conflito:
-        erros.append('Este horário já está ocupado. Escolha outro.')
-        
-    horario_obj = dt.time.fromisoformat(horario)
-    bloqueios = HorarioBloqueado.objects.filter(
-        data=data_obj
-    ).filter(
-        Q(barbeiro=barbeiro) | Q(barbeiro__isnull=True)
-    )
-    for b in bloqueios:
-        if b.tipo == 'dia':
-            erros.append(f'Este dia está bloqueado: {b.motivo or "Indisponível"}')
-            break
-        elif b.tipo == 'horario' and b.horario_inicio and b.horario_fim:
-            if b.horario_inicio <= horario_obj <= b.horario_fim:
-                erros.append(f'Este horário está bloqueado: {b.motivo or "Indisponível"}')
-                break
+                barbeiro=barbeiro,
+                data=data,
+                horario=horario,
+                status__in=['pendente', 'confirmado']
+            ).exists()
+            if conflito:
+                erros.append('Este horário já está ocupado. Escolha outro.')
 
-            if erros:
-                for e in erros:
-                    messages.error(request, e)
-            else:
-                Agendamento.objects.create(
-                    cliente=request.user,
-                    servico=servico,
-                    barbeiro=barbeiro,
-                    data=data,
-                    horario=horario,
-                    preco=servico.preco,
-                    status='pendente'
-                )
-                messages.success(request, 'Agendamento realizado com sucesso!')
-                return redirect('cliente_portal')
+            # Verificar bloqueios
+            horario_obj = dt.time.fromisoformat(horario)
+            bloqueios = HorarioBloqueado.objects.filter(
+                data=data_obj
+            ).filter(
+                Q(barbeiro=barbeiro) | Q(barbeiro__isnull=True)
+            )
+            for b in bloqueios:
+                if b.tipo == 'dia':
+                    erros.append(f'Este dia está bloqueado: {b.motivo or "Indisponível"}')
+                    break
+                elif b.tipo == 'horario' and b.horario_inicio and b.horario_fim:
+                    if b.horario_inicio <= horario_obj <= b.horario_fim:
+                        erros.append(f'Este horário está bloqueado: {b.motivo or "Indisponível"}')
+                        break
 
-        return render(request, 'portal/agendar.html', {
-            'servicos': servicos,
-            'barbeiros': barbeiros,
-            'hoje': datetime.date.today().isoformat(),
-        })
+        if erros:
+            for e in erros:
+                messages.error(request, e)
+        else:
+            Agendamento.objects.create(
+                cliente=request.user,
+                servico=servico,
+                barbeiro=barbeiro,
+                data=data,
+                horario=horario,
+                preco=servico.preco,
+                status='pendente'
+            )
+            messages.success(request, 'Agendamento realizado com sucesso!')
+            return redirect('cliente_portal')
+
+    return render(request, 'portal/agendar.html', {
+        'servicos': servicos,
+        'barbeiros': barbeiros,
+        'hoje': datetime.date.today().isoformat(),
+    })
 
 @login_required
 def cliente_horarios(request):

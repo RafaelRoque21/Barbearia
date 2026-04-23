@@ -6,25 +6,75 @@
     <h2 class="font-display text-3xl font-bold text-white">Clientes</h2>
     <p class="text-gray-500 text-sm mt-1">{{ clientes.count }} cliente(s) cadastrado(s)</p>
   </div>
-  <a href="{% url 'cliente_create' %}" class="btn-primary">+ Novo Cliente</a>
+  <a href="{% url 'cliente_create' %}" class="btn-primary flex items-center gap-2">
+    <i data-lucide="plus" class="w-4 h-4"></i> Novo Cliente
+  </a>
 </div>
+
 <div class="card">
   <table>
-    <thead><tr><th>Nome</th><th>Usuário</th><th>E-mail</th><th>Telefone</th><th>Ações</th></tr></thead>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Usuário</th>
+        <th>E-mail</th>
+        <th>Telefone</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
     <tbody>
       {% for c in clientes %}
       <tr>
-        <td class="font-medium text-white">{{ c.get_full_name|default:"—" }}</td>
-        <td class="text-gray-400">{{ c.username }}</td>
-        <td class="text-gray-400">{{ c.email|default:"—" }}</td>
-        <td class="text-gray-400">{{ c.telefone|default:"—" }}</td>
-        <td class="flex gap-2">
-          <a href="{% url 'cliente_edit' c.pk %}" class="btn-secondary text-xs py-1 px-3">Editar</a>
-          <a href="{% url 'cliente_delete' c.pk %}" class="btn-danger text-xs py-1 px-3">Excluir</a>
+        <td>
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                 style="background:rgba(201,168,76,0.15);color:#C9A84C">
+              {{ c.first_name|default:c.username|first|upper }}
+            </div>
+            <span class="font-medium text-white">{{ c.get_full_name|default:"—" }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="flex items-center gap-1.5 text-gray-400">
+            <i data-lucide="at-sign" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+            {{ c.username }}
+          </div>
+        </td>
+        <td>
+          <div class="flex items-center gap-1.5 text-gray-400">
+            <i data-lucide="mail" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+            {{ c.email|default:"—" }}
+          </div>
+        </td>
+        <td>
+          <div class="flex items-center gap-1.5 text-gray-400">
+            <i data-lucide="phone" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+            {{ c.telefone|default:"—" }}
+          </div>
+        </td>
+        <td>
+          <div class="flex gap-2">
+            <a href="{% url 'cliente_edit' c.pk %}" class="btn-secondary text-xs py-1 px-3 flex items-center gap-1">
+              <i data-lucide="pencil" class="w-3 h-3"></i> Editar
+            </a>
+            <a href="{% url 'cliente_delete' c.pk %}" class="btn-danger text-xs py-1 px-3 flex items-center gap-1">
+              <i data-lucide="trash-2" class="w-3 h-3"></i> Excluir
+            </a>
+          </div>
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="5" class="text-gray-600 text-center py-10">Nenhum cliente. <a href="{% url 'cliente_create' %}" style="color:#C9A84C">Cadastrar →</a></td></tr>
+      <tr>
+        <td colspan="5" class="text-center py-12">
+          <div class="flex flex-col items-center gap-3">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:rgba(201,168,76,0.1)">
+              <i data-lucide="users" class="w-6 h-6" style="color:#C9A84C"></i>
+            </div>
+            <p class="text-gray-500">Nenhum cliente cadastrado.</p>
+            <a href="{% url 'cliente_create' %}" class="btn-primary text-xs py-1.5 px-4">Cadastrar agora</a>
+          </div>
+        </td>
+      </tr>
       {% endfor %}
     </tbody>
   </table>
