@@ -1,0 +1,22 @@
+# Created by venv; see https://docs.python.org/3/library/venv.html
+# Virtual Environment
+venv/
+
+# Environment variables
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# SQLite
+db.sqlite3
+
+# VSCode
+.vscode/
+
+# Static collected
+staticfiles/
+
+# Logs
+*.log
