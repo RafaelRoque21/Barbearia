@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}Meu Perfil — BarberOS{% endblock %}
+{% block content %}
+<div class="mb-6 flex items-center gap-4">
+  <a href="{% url 'cliente_portal' %}" class="text-gray-500 hover:text-gray-300 text-sm">← Voltar</a>
+  <h2 class="font-display text-3xl font-bold text-white">Meu Perfil</h2>
+</div>
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="mb-4 {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+<!-- Card de avatar -->
+<div class="card p-6 flex items-center gap-5 mb-6">
+  <div class="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold flex-shrink-0"
+       style="background:linear-gradient(135deg,#C9A84C,#8B6914);color:#0D0D0D">
+    {{ request.user.username|first|upper }}
+  </div>
+  <div>
+    <p class="text-white font-bold text-xl">{{ request.user.get_full_name|default:request.user.username }}</p>
+    <p class="text-gray-500 text-sm">@{{ request.user.username }}</p>
+    <p class="text-xs mt-1" style="color:#C9A84C">Cliente</p>
+  </div>
+</div>
+
+<div class="grid grid-cols-2 gap-6">
+
+  <!-- Dados pessoais -->
+  <div class="card p-6">
+    <h3 class="font-semibold text-white mb-5 pb-2 border-b border-gray-800">Dados Pessoais</h3>
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      <input type="hidden" name="form_tipo" value="dados">
+
+      <div>
+        <label class="block text-sm text-gray-400 mb-1.5">Nome</label>
+        <input type="text" name="first_name" class="form-input" value="{{ request.user.first_name }}">
+      </div>
+      <div>
+        <label class="block text-sm text-gray-400 mb-1.5">Sobrenome</label>
+        <input type="text" name="last_name" class="form-input" value="{{ request.user.last_name }}">
+      </div>
+      <div>
+        <label class="block text-sm text-gray-400 mb-1.5">E-mail</label>
+        <input type="email" name="email" class="form-input" value="{{ request.user.email }}">
+      </div>
+      <div>
+        <label class="block text-sm text-gray-400 mb-1.5">Telefone</label>
+        <input type="text" name="telefone" class="form-input" value="{{ request.user.telefone }}">
+      </div>
+
+      <button type="submit" class="btn-primary w-full py-2.5 mt-2">Salvar Alterações</button>
+    </form>
+  </div>
+
+  <!-- Alterar senha -->
+  <div class="card p-6">
+    <h3 class="font-semibold text-white mb-5 pb-2 border-b border-gray-800">Alterar Senha</h3>
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      <input type="hidden" name="form_tipo" value="senha">
+
+      <div>
+        <label class="block text-sm text-gray-400 mb-1.5">Senha Atual</label>
+        <input type="password" name="password_atual" class="form-input" placeholder="••••••••">
+      </div>
+      <div>
+        <label class="block text-sm text-gray-400 mb-1.5">Nova Senha</label>
+        <input type="password" name="password_nova" class="form-input" placeholder="••••••••">
+      </div>
+      <div>
+        <label class="block text-sm text-gray-400 mb-1.5">Confirmar Nova Senha</label>
+        <input type="password" name="password_confirmar" class="form-input" placeholder="••••••••">
+      </div>
+
+      <button type="submit" class="btn-primary w-full py-2.5 mt-2">Alterar Senha</button>
+      <p class="text-xs text-gray-600 text-center">Ao alterar a senha você será redirecionado para o login.</p>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

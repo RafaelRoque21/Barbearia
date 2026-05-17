@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}Atendimento — BarberOS{% endblock %}
+{% block content %}
+<div class="mb-6">
+  <h2 class="font-display text-3xl font-bold text-white">Atendimento</h2>
+  <div class="flex items-center gap-2 mt-1">
+    <i data-lucide="calendar" class="w-4 h-4" style="color:#C9A84C"></i>
+    <p class="text-gray-500 text-sm">Fila de hoje — {{ hoje|date:"d/m/Y" }}</p>
+  </div>
+</div>
+
+<div class="space-y-4">
+  {% for ag in agendamentos %}
+  <div class="card p-5 flex items-center gap-5 relative">
+
+    <!-- Barra lateral de status -->
+    <div class="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl"
+         style="background:{% if ag.status == 'confirmado' %}#16a34a{% else %}#d97706{% endif %}">
+    </div>
+
+    <!-- Horário -->
+    <div class="text-center w-16 pl-2">
+      <p class="text-xl font-bold text-white">{{ ag.horario|time:"H:i" }}</p>
+      <div class="flex items-center justify-center gap-0.5 text-gray-600 text-xs mt-0.5">
+        <i data-lucide="timer" class="w-3 h-3"></i>
+        {{ ag.servico.duracao }}min
+      </div>
+    </div>
+
+    <div class="w-px h-14 bg-gray-700"></div>
+
+    <!-- Avatar -->
+    <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
+         style="background:rgba(201,168,76,0.15);color:#C9A84C">
+      {{ ag.cliente.first_name|default:ag.cliente.username|first|upper }}
+    </div>
+
+    <!-- Info -->
+    <div class="flex-1">
+      <p class="font-bold text-white text-lg">{{ ag.cliente.get_full_name|default:ag.cliente.username }}</p>
+      <div class="flex items-center gap-3 mt-0.5">
+        <span class="text-gray-400 text-sm flex items-center gap-1">
+          <i data-lucide="sparkles" class="w-3 h-3" style="color:#C9A84C;opacity:0.6"></i>
+          {{ ag.servico.nome }}
+        </span>
+        <span class="text-gray-600 text-xs">·</span>
+        <span class="text-gray-400 text-sm flex items-center gap-1">
+          <i data-lucide="scissors" class="w-3 h-3" style="color:#C9A84C;opacity:0.6"></i>
+          {{ ag.barbeiro.nome }}
+        </span>
+        <span class="text-gray-600 text-xs">·</span>
+        <span class="text-gray-400 text-sm flex items-center gap-1" style="color:#C9A84C">
+          <i data-lucide="tag" class="w-3 h-3" style="opacity:0.6"></i>
+          R$ {{ ag.preco }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Ações -->
+    <div class="flex items-center gap-3">
+      <span class="badge-{{ ag.status }}">{{ ag.get_status_display }}</span>
+      {% if ag.status == 'pendente' %}
+        <a href="{% url 'iniciar_atendimento' ag.pk %}" class="btn-primary text-sm flex items-center gap-2">
+          <i data-lucide="play" class="w-3.5 h-3.5"></i> Iniciar
+        </a>
+      {% elif ag.status == 'confirmado' %}
+        <a href="{% url 'finalizar_atendimento' ag.pk %}" class="btn-primary text-sm flex items-center gap-2">
+          <i data-lucide="check" class="w-3.5 h-3.5"></i> Finalizar
+        </a>
+      {% endif %}
+    </div>
+  </div>
+  {% empty %}
+  <div class="card p-12 text-center">
+    <div class="flex flex-col items-center gap-4">
+      <div class="w-16 h-16 rounded-2xl flex items-center justify-center" style="background:rgba(201,168,76,0.1)">
+        <i data-lucide="check-circle" class="w-8 h-8" style="color:#C9A84C"></i>
+      </div>
+      <div>
+        <p class="text-white font-semibold text-lg">Nenhum atendimento pendente hoje</p>
+        <p class="text-gray-500 text-sm mt-1">Todos os atendimentos foram concluídos ou ainda não há agendamentos.</p>
+      </div>
+      <a href="{% url 'agendamento_create' %}" class="btn-primary text-sm flex items-center gap-2">
+        <i data-lucide="plus" class="w-4 h-4"></i> Novo Agendamento
+      </a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -53,3 +53,4 @@ templates/          # Templates HTML (Tailwind CSS)
 | admin | admin123 | Administrador |
 | joao.silva | cliente123 | Cliente |
 | maria.santos | cliente123 | Cliente |
+"# Barbearia-1.5" 

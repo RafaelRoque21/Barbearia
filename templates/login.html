@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BarberOS — Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'DM Sans', sans-serif; }
+    .font-display { font-family: 'Playfair Display', serif; }
+    body { background: #0D0D0D; }
+    .form-input { background: #1f1f1f; border: 1px solid #3a3a3a; color: #E8E8E8; border-radius: 8px; padding: 0.65rem 0.9rem; width: 100%; transition: border-color 0.2s; }
+    .form-input:focus { outline: none; border-color: #C9A84C; box-shadow: 0 0 0 2px rgba(201,168,76,0.15); }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center relative">
+
+  <!-- Fundo com padrão -->
+  <div class="bg-pattern"></div>
+  <div class="bg-glow"></div>
+
+  <!-- Conteúdo -->
+  <div class="w-full max-w-md px-6 relative z-10">
+
+    <!-- Logo -->
+    <div class="text-center mb-10 card-login">
+      <div class="inline-flex w-16 h-16 rounded-2xl items-center justify-center mb-4 icon-pulse"
+           style="background:linear-gradient(135deg,#C9A84C,#8B6914)">
+        <i data-lucide="scissors" class="w-7 h-7" style="color:#0D0D0D"></i>
+      </div>
+      <h1 class="font-display font-black text-4xl" style="color:#C9A84C">BarberOS</h1>
+      <p class="text-gray-500 text-sm mt-1">Sistema de Gestão para Barbearias</p>
+    </div>
+
+    <!-- Card de login -->
+    <div class="card-login" style="background:#1A1A1A;border:1px solid #2a2a2a;border-radius:16px;">
+
+      <!-- Linha decorativa dourada -->
+      <div style="height:2px;background:linear-gradient(90deg,transparent,#C9A84C,transparent);border-radius:16px 16px 0 0"></div>
+
+      <div class="p-8">
+        <h2 class="text-xl font-semibold text-white mb-6">Entrar no sistema</h2>
+
+        {% if form.errors %}
+          <div style="background:#7f1d1d33;border:1px solid #991b1b;color:#fca5a5;border-radius:8px;" class="p-3 mb-4 text-sm flex items-center gap-2">
+            <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i>
+            Usuário ou senha incorretos.
+          </div>
+        {% endif %}
+
+      <form method="post" class="space-y-4">
+        {% csrf_token %}
+        <div>
+          <label class="block text-sm text-gray-400 mb-1.5">Usuário</label>
+          <input type="text" name="username" class="form-input" placeholder="seu_usuario" autofocus>
+        </div>
+        <div>
+          <label class="block text-sm text-gray-400 mb-1.5">Senha</label>
+          <input type="password" name="password" class="form-input" placeholder="••••••••">
+        </div>
+        <button type="submit" class="w-full py-3 rounded-lg font-semibold text-sm mt-2" style="background:linear-gradient(135deg,#C9A84C,#8B6914);color:#0D0D0D">
+          Entrar
+        </button>
+      </form>
+    </div>
+
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    function toggleSenha() {
+      const input = document.getElementById('senha');
+      const icon = document.getElementById('icon-olho');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        input.type = 'password';
+        icon.setAttribute('data-lucide', 'eye');
+      }
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>

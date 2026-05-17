@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Horários Disponíveis — BarberOS{% endblock %}
+{% block content %}
+<div class="mb-6 flex items-center gap-4">
+  <a href="{% url 'cliente_portal' %}" class="text-gray-500 hover:text-gray-300 text-sm">← Voltar</a>
+  <h2 class="font-display text-3xl font-bold text-white">Horários Disponíveis</h2>
+</div>
+
+<div class="card p-5 max-w-xl mb-6">
+  <form method="get" class="flex gap-4 items-end">
+    <div class="flex-1">
+      <label class="block text-sm text-gray-400 mb-1.5">Barbeiro</label>
+      <select name="barbeiro" class="form-select">
+        <option value="">Selecione...</option>
+        {% for b in barbeiros %}
+        <option value="{{ b.pk }}" {% if barbeiro_sel and barbeiro_sel.pk == b.pk %}selected{% endif %}>
+          {{ b.nome }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="flex-1">
+      <label class="block text-sm text-gray-400 mb-1.5">Data</label>
+      <input type="date" name="data" class="form-input" value="{{ data_str }}" min="{{ hoje }}">
+    </div>
+    <button type="submit" class="btn-primary px-5 py-2">Ver</button>
+  </form>
+</div>
+
+{% if barbeiro_sel %}
+<div class="mb-3">
+  <p class="text-gray-400 text-sm">
+    Agenda de <strong class="text-white">{{ barbeiro_sel.nome }}</strong>
+    em <strong class="text-white">{{ data|date:"d/m/Y" }}</strong>
+  </p>
+</div>
+
+<div class="grid grid-cols-4 gap-3">
+  {% for h in horarios %}
+  <div class="card p-4 text-center {% if h.ocupado %}opacity-40{% else %}hover:border-yellow-800{% endif %} transition-colors">
+    <p class="text-lg font-bold {% if h.ocupado %}text-gray-600{% else %}text-white{% endif %}">
+      {{ h.hora|time:"H:i" }}
+    </p>
+    {% if h.ocupado %}
+      <p class="text-xs text-red-400 mt-1">Ocupado</p>
+    {% else %}
+      <p class="text-xs mt-1" style="color:#C9A84C">Disponível</p>
+      <a href="{% url 'cliente_agendar' %}?horario={{ h.hora|time:'H:i' }}"
+         class="btn-primary text-xs py-1 px-3 mt-2 inline-block">Agendar</a>
+    {% endif %}
+  </div>
+  {% empty %}
+  <div class="col-span-4 card p-10 text-center text-gray-600">
+    Nenhum horário encontrado para este barbeiro.
+  </div>
+  {% endfor %}
+</div>
+
+{% elif not barbeiro_sel %}
+<div class="card p-12 text-center">
+  <p class="text-4xl mb-3">🕐</p>
+  <p class="text-gray-500">Selecione um barbeiro e uma data para ver os horários.</p>
+</div>
+{% endif %}
+{% endblock %}

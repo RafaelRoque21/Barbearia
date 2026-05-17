@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}Barbeiros — BarberOS{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h2 class="font-display text-3xl font-bold text-white">Barbeiros</h2>
+    <p class="text-gray-500 text-sm mt-1">{{ barbeiros.count }} barbeiro(s) cadastrado(s)</p>
+  </div>
+  <a href="{% url 'barbeiro_create' %}" class="btn-primary flex items-center gap-2">
+    <i data-lucide="plus" class="w-4 h-4"></i> Novo Barbeiro
+  </a>
+</div>
+
+<div class="card">
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Telefone</th>
+        <th>Especialidade</th>
+        <th>Horário</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for b in barbeiros %}
+      <tr>
+        <td>
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                 style="background:rgba(201,168,76,0.15);color:#C9A84C">
+              {{ b.nome|first|upper }}
+            </div>
+            <span class="font-medium text-white">{{ b.nome }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="flex items-center gap-1.5 text-gray-400">
+            <i data-lucide="phone" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+            {{ b.telefone }}
+          </div>
+        </td>
+        <td>
+          <div class="flex items-center gap-1.5 text-gray-400">
+            {% if b.especialidade == 'cabelo' %}
+              <i data-lucide="scissors" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+            {% elif b.especialidade == 'barba' %}
+              <i data-lucide="feather" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+            {% else %}
+              <i data-lucide="sparkles" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+            {% endif %}
+            {{ b.get_especialidade_display }}
+          </div>
+        </td>
+        <td>
+          <div class="flex items-center gap-1.5 text-gray-400">
+            <i data-lucide="clock" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+            {{ b.horario_inicio|time:"H:i" }} — {{ b.horario_fim|time:"H:i" }}
+          </div>
+        </td>
+        <td><span class="badge-{{ b.status }}">{{ b.get_status_display }}</span></td>
+        <td>
+          <div class="flex gap-2">
+            <a href="{% url 'barbeiro_edit' b.pk %}" class="btn-secondary text-xs py-1 px-3 flex items-center gap-1">
+              <i data-lucide="pencil" class="w-3 h-3"></i> Editar
+            </a>
+            <a href="{% url 'barbeiro_delete' b.pk %}" class="btn-danger text-xs py-1 px-3 flex items-center gap-1">
+              <i data-lucide="trash-2" class="w-3 h-3"></i> Excluir
+            </a>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" class="text-center py-12">
+          <div class="flex flex-col items-center gap-3">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:rgba(201,168,76,0.1)">
+              <i data-lucide="scissors" class="w-6 h-6" style="color:#C9A84C"></i>
+            </div>
+            <p class="text-gray-500">Nenhum barbeiro cadastrado.</p>
+            <a href="{% url 'barbeiro_create' %}" class="btn-primary text-xs py-1.5 px-4">Cadastrar agora</a>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

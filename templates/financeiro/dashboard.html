@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% block title %}Financeiro — BarberOS{% endblock %}
+{% block content %}
+<div class="mb-6">
+  <h2 class="font-display text-3xl font-bold text-white">Financeiro</h2>
+  <p class="text-gray-500 text-sm mt-1">Controle de ganhos e pagamentos</p>
+</div>
+
+<!-- Cards de ganhos -->
+<div class="grid grid-cols-2 gap-5 mb-8">
+  <div class="card-gold p-6 rounded-xl">
+    <div class="flex items-center justify-between mb-3">
+      <p class="text-xs uppercase tracking-wider font-semibold" style="color:#0D0D0D;opacity:0.6">Ganhos Hoje</p>
+      <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(0,0,0,0.15)">
+        <i data-lucide="sun" class="w-4 h-4" style="color:#0D0D0D;opacity:0.7"></i>
+      </div>
+    </div>
+    <p class="text-4xl font-bold" style="color:#0D0D0D">R$ {{ ganhos_hoje }}</p>
+    <p class="text-xs mt-2 flex items-center gap-1" style="color:#0D0D0D;opacity:0.4">
+      <i data-lucide="trending-up" class="w-3 h-3"></i> Faturamento do dia
+    </p>
+  </div>
+
+  <div class="card p-6">
+    <div class="flex items-center justify-between mb-3">
+      <p class="text-xs uppercase tracking-wider text-gray-500">Ganhos do Mês</p>
+      <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(201,168,76,0.1)">
+        <i data-lucide="calendar" class="w-4 h-4" style="color:#C9A84C"></i>
+      </div>
+    </div>
+    <p class="text-4xl font-bold text-white">R$ {{ ganhos_mes }}</p>
+    <p class="text-xs mt-2 flex items-center gap-1 text-gray-600">
+      <i data-lucide="trending-up" class="w-3 h-3"></i> Faturamento do mês
+    </p>
+  </div>
+</div>
+
+<!-- Aguardando pagamento -->
+{% if sem_pagamento %}
+<div class="card mb-6">
+  <div class="p-4 border-b border-gray-800 flex items-center justify-between">
+    <h3 class="font-semibold text-white flex items-center gap-2">
+      <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:rgba(251,191,36,0.1)">
+        <i data-lucide="alert-triangle" class="w-4 h-4" style="color:#fcd34d"></i>
+      </div>
+      Aguardando Pagamento
+    </h3>
+    <span class="text-xs flex items-center gap-1" style="color:#fcd34d">
+      <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+      {{ sem_pagamento.count }} pendente(s)
+    </span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>Serviço</th>
+        <th>Barbeiro</th>
+        <th>Valor</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ag in sem_pagamento %}
+      <tr>
+        <td>
+          <div class="flex items-center gap-3">
+            <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                 style="background:rgba(201,168,76,0.15);color:#C9A84C">
+              {{ ag.cliente.first_name|default:ag.cliente.username|first|upper }}
+            </div>
+            <span class="text-white">{{ ag.cliente.get_full_name|default:ag.cliente.username }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="flex items-center gap-1.5 text-gray-400">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+            {{ ag.servico.nome }}
+          </div>
+        </td>
+        <td>
+          <div class="flex items-center gap-1.5 text-gray-400">
+            <i data-lucide="scissors" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+            {{ ag.barbeiro.nome }}
+          </div>
+        </td>
+        <td>
+          <div class="flex items-center gap-1.5 font-semibold" style="color:#C9A84C">
+            <i data-lucide="tag" class="w-3.5 h-3.5" style="opacity:0.6"></i>
+            R$ {{ ag.preco }}
+          </div>
+        </td>
+        <td>
+          <a href="{% url 'registrar_pagamento' ag.pk %}" class="btn-primary text-xs py-1 px-3 flex items-center gap-1 w-fit">
+            <i data-lucide="wallet" class="w-3 h-3"></i> Registrar Pagamento
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<!-- Últimos pagamentos -->
+<div class="card">
+  <div class="p-4 border-b border-gray-800 flex items-center justify-between">
+    <h3 class="font-semibold text-white flex items-center gap-2">
+      <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:rgba(201,168,76,0.1)">
+        <i data-lucide="receipt" class="w-4 h-4" style="color:#C9A84C"></i>
+      </div>
+      Últimos Pagamentos
+    </h3>
+    <a href="{% url 'relatorio' %}" class="text-xs flex items-center gap-1" style="color:#C9A84C">
+      <i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i> Ver relatório →
+    </a>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>Modalidade</th>
+        <th>Valor</th>
+        <th>Data</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in pagamentos %}
+      <tr>
+        <td>
+          <div class="flex items-center gap-3">
+            <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                 style="background:rgba(201,168,76,0.15);color:#C9A84C">
+              {{ p.agendamento.cliente.first_name|default:p.agendamento.cliente.username|first|upper }}
+            </div>
+            <span class="text-white">{{ p.agendamento.cliente.get_full_name|default:p.agendamento.cliente.username }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="flex items-center gap-1.5 text-gray-400">
+            {% if p.modalidade == 'pix' %}
+              <i data-lucide="zap" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+            {% elif p.modalidade == 'credito' %}
+              <i data-lucide="credit-card" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+            {% elif p.modalidade == 'debito' %}
+              <i data-lucide="credit-card" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+            {% else %}
+              <i data-lucide="banknote" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+            {% endif %}
+            {{ p.get_modalidade_display }}
+          </div>
+        </td>
+        <td>
+          <div class="flex items-center gap-1.5 font-semibold" style="color:#C9A84C">
+            <i data-lucide="tag" class="w-3.5 h-3.5" style="opacity:0.6"></i>
+            R$ {{ p.valor }}
+          </div>
+        </td>
+        <td>
+          <div class="flex items-center gap-1.5 text-gray-400">
+            <i data-lucide="calendar" class="w-3.5 h-3.5" style="color:#C9A84C;opacity:0.6"></i>
+            {{ p.pago_em|date:"d/m/Y H:i" }}
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4" class="text-center py-12">
+          <div class="flex flex-col items-center gap-3">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:rgba(201,168,76,0.1)">
+              <i data-lucide="receipt" class="w-6 h-6" style="color:#C9A84C"></i>
+            </div>
+            <p class="text-gray-500">Nenhum pagamento registrado</p>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

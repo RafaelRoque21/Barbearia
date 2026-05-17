@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}BarberOS{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'DM Sans', sans-serif; }
+    .font-display { font-family: 'Playfair Display', serif; }
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #E8C97A;
+      --dark: #0D0D0D;
+      --dark-2: #1A1A1A;
+      --dark-3: #252525;
+    }
+    body { background-color: var(--dark); color: #E8E8E8; }
+    .sidebar { background: var(--dark-2); border-right: 1px solid #2a2a2a; }
+    .nav-link { transition: all 0.2s; }
+    .nav-link:hover, .nav-link.active { background: rgba(201,168,76,0.12); color: var(--gold); border-left: 3px solid var(--gold); }
+    .nav-link { border-left: 3px solid transparent; }
+    .card { background: var(--dark-2); border: 1px solid #2a2a2a; border-radius: 12px; }
+    .card-gold { background: linear-gradient(135deg, #C9A84C 0%, #8B6914 100%); }
+    .btn-primary { background: linear-gradient(135deg, #C9A84C, #8B6914); color: #0D0D0D; font-weight: 600; border-radius: 8px; padding: 0.5rem 1.25rem; transition: opacity 0.2s; }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-secondary { background: #2a2a2a; color: #E8E8E8; border: 1px solid #3a3a3a; border-radius: 8px; padding: 0.5rem 1.25rem; transition: background 0.2s; }
+    .btn-secondary:hover { background: #333; }
+    .btn-danger { background: #7f1d1d; color: #fca5a5; border-radius: 8px; padding: 0.5rem 1.25rem; }
+    .btn-danger:hover { background: #991b1b; }
+    .form-input, .form-select, .form-textarea {
+      background: #1f1f1f; border: 1px solid #3a3a3a; color: #E8E8E8;
+      border-radius: 8px; padding: 0.5rem 0.75rem; width: 100%;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none; border-color: var(--gold); box-shadow: 0 0 0 2px rgba(201,168,76,0.15);
+    }
+    .form-select option { background: #1f1f1f; }
+    .badge-pendente { background: #78350f; color: #fcd34d; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; }
+    .badge-confirmado { background: #14532d; color: #86efac; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; }
+    .badge-cancelado { background: #7f1d1d; color: #fca5a5; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; }
+    .badge-concluido { background: #1e3a5f; color: #93c5fd; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; }
+    .badge-ativo { background: #14532d; color: #86efac; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; }
+    .badge-inativo { background: #374151; color: #9ca3af; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; }
+    table { width: 100%; border-collapse: collapse; }
+    th { color: #9ca3af; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #2a2a2a; }
+    td { padding: 0.85rem 1rem; border-bottom: 1px solid #1f1f1f; font-size: 0.875rem; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .alert-success { background: #14532d33; border: 1px solid #166534; color: #86efac; border-radius: 8px; padding: 0.75rem 1rem; }
+    .alert-warning { background: #78350f33; border: 1px solid #92400e; color: #fcd34d; border-radius: 8px; padding: 0.75rem 1rem; }
+    .alert-error { background: #7f1d1d33; border: 1px solid #991b1b; color: #fca5a5; border-radius: 8px; padding: 0.75rem 1rem; }
+    .scissor-icon::before { content: '✂'; }
+
+    /* Scrollbar customizada da sidebar */
+    .sidebar-nav {
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #C9A84C #1A1A1A;
+    }
+    .sidebar-nav::-webkit-scrollbar {
+      width: 5px;
+    }
+    .sidebar-nav::-webkit-scrollbar-track {
+      background: #1A1A1A;
+    }
+    .sidebar-nav::-webkit-scrollbar-thumb {
+      background: #C9A84C;
+      border-radius: 999px;
+    }
+    .sidebar-nav::-webkit-scrollbar-thumb:hover {
+      background: #E8C97A;
+    }
+  </style>
+  <style>
+  /* Variáveis */
+  :root {
+    --gold: #C9A84C;
+    --gold-dark: #8B6914;
+    --dark: #0D0D0D;
+    --dark-2: #1A1A1A;
+    --dark-3: #252525;
+    --white: #FFFFFF;
+    --gray: #9CA3AF;
+  }
+
+  /* Widget Principal */
+  .chatbot-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 400px;
+    height: 400px;
+    background: var(--dark-2);
+    border: 1px solid var(--dark-3);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    z-index: 9999;
+    animation: slideUp 0.3s ease forwards;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .chatbot-widget.hidden {
+    display: none;
+  }
+
+  /* Cabeçalho */
+  .chatbot-header {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    padding: 20px;
+    border-radius: 16px 16px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--dark);
+  }
+
+  .chatbot-header-content h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .chatbot-header-content p {
+    margin: 4px 0 0 0;
+    font-size: 13px;
+    opacity: 0.9;
+  }
+
+  .chatbot-toggle-btn {
+    background: none;
+    border: none;
+    color: var(--dark);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.2s;
+  }
+
+  .chatbot-toggle-btn:hover {
+    transform: scale(1.1);
+  }
+
+  /* Área de Mensagens */
+  .chatbot-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: var(--dark);
+  }
+
+  .chatbot-messages::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .chatbot-messages::-webkit-scrollbar-thumb {
+    background: var(--gold);
+    border-radius: 3px;
+  }
+
+  /* Mensagens */
+  .chatbot-message {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .chatbot-message.user {
+    justify-content: flex-end;
+  }
+
+  .chatbot-message.user .chatbot-bubble {
+    background: var(--gold);
+    color: var(--dark);
+    border-radius: 16px 16px 0 16px;
+  }
+
+  .chatbot-message.bot {
+    justify-content: flex-start;
+  }
+
+  .chatbot-message.bot .chatbot-bubble {
+    background: var(--dark-3);
+    color: var(--white);
+    border-radius: 16px 16px 16px 0;
+  }
+
+  .chatbot-bubble {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+  }
+
+  /* Loading */
+  .chatbot-typing {
+    display: flex;
+    gap: 4px;
+  }
+
+  .chatbot-typing span {
+    width: 6px;
+    height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: pulse 1.4s infinite;
+  }
+
+  .chatbot-typing span:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .chatbot-typing span:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  @keyframes pulse {
+    0%, 60%, 100% {
+      opacity: 0.3;
+    }
+    30% {
+      opacity: 1;
+    }
+  }
+
+  /* Input */
+  .chatbot-input-area {
+    padding: 16px;
+    border-top: 1px solid var(--dark-3);
+    background: var(--dark-2);
+    border-radius: 0 0 16px 16px;
+  }
+
+  #chatbot-form {
+    display: flex;
+    gap: 8px;
+  }
+
+  #chatbot-input {
+    flex: 1;
+    padding: 10px 14px;
+    background: var(--dark-3);
+    border: 1px solid var(--dark-3);
+    border-radius: 8px;
+    color: var(--white);
+    font-size: 14px;
+    transition: border-color 0.2s;
+  }
+
+  #chatbot-input:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+
+  .chatbot-send-btn {
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .chatbot-send-btn:hover {
+    background: var(--gold-dark);
+  }
+
+  /* Botão Flutuante */
+  .chatbot-fab {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border: none;
+    color: var(--dark);
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 9998;
+    animation: pulse 5s infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .chatbot-fab:hover {
+    transform: scale(1.1);
+  }
+
+  .chatbot-fab.hidden {
+    display: none;
+  }
+
+  /* Responsivo */
+  @media (max-width: 600px) {
+    .chatbot-widget {
+      width: calc(100vw - 20px);
+      height: 70vh;
+      bottom: 70px;
+      right: 10px;
+    }
+
+    .chatbot-bubble {
+      max-width: 90%;
+    }
+  }
+</style>
+
+</head>
+<body class="min-h-screen flex">
+
+  <!-- Sidebar -->
+  <aside class="sidebar w-64 min-h-screen flex flex-col fixed left-0 top-0 z-30">
+    <div class="p-6 border-b border-gray-800">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#C9A84C,#8B6914)">
+          <i data-lucide="scissors" class="w-5 h-5" style="color:#0D0D0D"></i>
+          </div>
+          <div>
+          <h1 class="font-display font-bold text-lg leading-tight" style="color:#C9A84C">BarberOS</h1>
+          <p class="text-xs text-gray-500">Sistema de Gestão</p>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav p-4 space-y-1" style="flex:1; max-height: calc(100vh - 160px);">
+
+      {% if request.user.tipo == 'cliente' %}
+
+        <p class="text-xs text-gray-600 uppercase tracking-widest px-3 pt-2 pb-1">Minha Área</p>
+        <a href="{% url 'cliente_portal' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <i data-lucide="home" class="w-4 h-4" style="color:#C9A84C"></i> Início
+        </a>
+        <a href="{% url 'cliente_perfil' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <i data-lucide="user-circle" class="w-4 h-4" style="color:#C9A84C"></i> Meu Perfil
+        </a>
+        <a href="{% url 'cliente_agendar' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <i data-lucide="calendar-plus" class="w-4 h-4" style="color:#C9A84C"></i> Fazer Agendamento
+        </a>
+        <a href="{% url 'cliente_horarios' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <i data-lucide="clock" class="w-4 h-4" style="color:#C9A84C"></i> Horários Disponíveis
+        </a>
+        <a href="{% url 'cliente_historico' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <i data-lucide="scroll-text" class="w-4 h-4" style="color:#C9A84C"></i> Meu Histórico
+        </a>
+
+      {% else %}
+
+        <p class="text-xs text-gray-600 uppercase tracking-widest px-3 pt-2 pb-1">Geral</p>
+        <a href="{% url 'dashboard' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+          <i data-lucide="layout-dashboard" class="w-4 h-4" style="color:#C9A84C"></i> Dashboard
+        </a>
+        <a href="{% url 'agenda' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <i data-lucide="calendar-days" class="w-4 h-4" style="color:#C9A84C"></i> Agenda
+        </a>
+        <a href="{% url 'atendimento_list' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <i data-lucide="zap" class="w-4 h-4" style="color:#C9A84C"></i> Atendimento
+        </a>
+
+        <p class="text-xs text-gray-600 uppercase tracking-widest px-3 pt-4 pb-1">Cadastros</p>
+        <a href="{% url 'agendamento_list' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <i data-lucide="clipboard-list" class="w-4 h-4" style="color:#C9A84C"></i> Agendamentos
+        </a>
+        <a href="{% url 'cliente_list' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <i data-lucide="users" class="w-4 h-4" style="color:#C9A84C"></i> Clientes
+        </a>
+        <a href="{% url 'barbeiro_list' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <i data-lucide="scissors" class="w-4 h-4" style="color:#C9A84C"></i> Barbeiros
+        </a>
+        <a href="{% url 'servico_list' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <i data-lucide="sparkles" class="w-4 h-4" style="color:#C9A84C"></i> Serviços
+        </a>
+        <a href="{% url 'horario_bloqueado_list' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <i data-lucide="ban" class="w-4 h-4" style="color:#C9A84C"></i> Bloqueios
+        </a>
+
+        <p class="text-xs text-gray-600 uppercase tracking-widest px-3 pt-4 pb-1">Financeiro</p>
+        <a href="{% url 'financeiro_dashboard' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <i data-lucide="wallet" class="w-4 h-4" style="color:#C9A84C"></i> Financeiro
+        </a>
+        <a href="{% url 'relatorio' %}" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300">
+          <i data-lucide="bar-chart-2" class="w-4 h-4" style="color:#C9A84C"></i> Relatórios
+        </a>
+
+      {% endif %}
+
+    </nav>
+
+    <div class="p-4 border-t border-gray-800">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background:#C9A84C;color:#0D0D0D">
+          {{ request.user.first_name|default:request.user.username|first|upper }}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm text-gray-300 truncate">{{ request.user.get_full_name|default:request.user.username }}</p>
+          <p class="text-xs text-gray-600">{{ request.user.get_tipo_display|default:"Admin" }}</p>
+        </div>
+        <form method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="text-gray-600 hover:text-gray-400 text-xs bg-transparent border-0 cursor-pointer p-0">Sair</button>
+        </form>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 ml-64 min-h-screen">
+    <div class="p-8">
+      {% if messages %}
+        <div class="mb-6 space-y-2">
+          {% for message in messages %}
+            <div class="alert-{% if message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% else %}success{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+</body>
+</html>
